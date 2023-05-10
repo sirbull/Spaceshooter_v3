@@ -3,7 +3,26 @@ namespace SpriteKind {
     export const splash = SpriteKind.create()
     export const powerUp = SpriteKind.create()
     export const info = SpriteKind.create()
+    export const healthUp = SpriteKind.create()
 }
+sprites.onOverlap(SpriteKind.Player, SpriteKind.healthUp, function (sprite, otherSprite) {
+    info.changeLifeBy(1)
+    sprites.destroy(otherSprite, effects.hearts, 10)
+})
+info.onScore(2, function () {
+    heart = sprites.create(img`
+        . . 1 1 . 1 1 . . 
+        . 1 2 2 1 2 2 1 . 
+        1 2 2 2 2 2 4 2 1 
+        1 2 2 2 2 2 2 2 1 
+        . 1 2 2 2 2 2 1 . 
+        . . 1 2 2 2 1 . . 
+        . . . 1 2 1 . . . 
+        . . . . 1 . . . . 
+        `, SpriteKind.healthUp)
+    heart.setPosition(randint(10, 150), -10)
+    heart.setVelocity(randint(-10, 10), randint(20, 40 + 0.1 * stoneSpawn))
+})
 sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Player, function (sprite, otherSprite) {
     info.changeLifeBy(-1)
     sprites.destroy(sprite)
@@ -408,12 +427,13 @@ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite, oth
     sprites.destroy(sprite)
     info.changeScoreBy(1)
 })
-let enemyStone: Sprite = null
 let muzzle: Sprite = null
 let ShipBullet: Sprite = null
-let stoneSpawn = 0
 let PowerUpShootRate: Sprite = null
+let asteroid: Sprite = null
 let splashSpriteShip: Sprite = null
+let stoneSpawn = 0
+let heart: Sprite = null
 let infoText: Sprite = null
 let shootRate = 0
 let SpaceShip = sprites.create(img`
@@ -475,7 +495,9 @@ infoText = sprites.create(img`
     `, SpriteKind.info)
 infoText.setPosition(80, 130)
 forever(function () {
-	
+    if (asteroid.y > 125) {
+        sprites.destroy(asteroid)
+    }
 })
 forever(function () {
     effects.starField.startScreenEffect(2000)
@@ -546,12 +568,66 @@ forever(function () {
             3 a 1 1 
             3 a a 3 
             . 3 3 . 
-            `, SpaceShip, 20, -100)
+            `, SpaceShip, 15, -100)
         ShipBullet = sprites.createProjectileFromSprite(img`
             . 3 1 . 
             3 a 1 1 
             3 a a 3 
             . 3 3 . 
+            `, SpaceShip, -15, -100)
+        muzzle = sprites.createProjectileFromSprite(img`
+            ................
+            ................
+            ................
+            ................
+            ................
+            ................
+            ................
+            ................
+            ................
+            ................
+            .........5......
+            .....5..........
+            ......55.5......
+            .......55.......
+            ................
+            ................
+            ................
+            ................
+            ................
+            ................
+            ................
+            ................
+            ................
+            ................
+            ................
+            ................
+            ................
+            ................
+            ................
+            ................
+            `, SpaceShip, 0, 0)
+        pause(50)
+        sprites.destroy(muzzle)
+    }
+    if (shootRate <= 999 && shootRate >= 500) {
+        ShipBullet = sprites.createProjectileFromSprite(img`
+            . 9 1 . 
+            9 6 1 1 
+            9 6 6 9 
+            . 9 9 . 
+            `, SpaceShip, 20, -100)
+        ShipBullet = sprites.createProjectileFromSprite(img`
+            . 9 1 . 
+            9 6 1 1 
+            9 6 6 9 
+            . 9 9 . 
+            `, SpaceShip, 0, -100)
+        ShipBullet = sprites.createProjectileFromSprite(img`
+            . 9 1 . 
+            9 6 1 1 
+            9 6 6 9 
+            . 9 9 . 
             `, SpaceShip, -20, -100)
         muzzle = sprites.createProjectileFromSprite(img`
             ................
@@ -588,7 +664,7 @@ forever(function () {
         pause(50)
         sprites.destroy(muzzle)
     }
-    if (shootRate < 999) {
+    if (shootRate < 499) {
         ShipBullet = sprites.createProjectileFromSprite(img`
             . 2 1 . 
             2 7 1 1 
@@ -656,7 +732,7 @@ game.onUpdateInterval(100, function () {
 	
 })
 game.onUpdateInterval(randint(200 - stoneSpawn, 2000 - stoneSpawn), function () {
-    enemyStone = sprites.create(img`
+    asteroid = sprites.create(img`
         . . . . c c . . 
         . c a a a a . . 
         . a a f f b a . 
@@ -666,6 +742,6 @@ game.onUpdateInterval(randint(200 - stoneSpawn, 2000 - stoneSpawn), function () 
         . b b f f a a c 
         . . a a b b c . 
         `, SpriteKind.Enemy)
-    enemyStone.setPosition(randint(10, 150), -10)
-    enemyStone.setVelocity(randint(-10, 10), randint(20, 40 + 0.1 * stoneSpawn))
+    asteroid.setPosition(randint(10, 150), -10)
+    asteroid.setVelocity(randint(-10, 10), randint(20, 40 + 0.1 * stoneSpawn))
 })
