@@ -2,6 +2,7 @@ namespace SpriteKind {
     export const effect = SpriteKind.create()
     export const splash = SpriteKind.create()
     export const powerUp = SpriteKind.create()
+    export const info = SpriteKind.create()
 }
 sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Player, function (sprite, otherSprite) {
     info.changeLifeBy(-1)
@@ -397,6 +398,7 @@ function splashScreen () {
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.powerUp, function (sprite, otherSprite) {
     if (shootRate > 100) {
+        infoText.sayText("Bullet speed up!", 2000, false)
         shootRate += -100
         sprites.destroy(otherSprite)
     }
@@ -406,12 +408,13 @@ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite, oth
     sprites.destroy(sprite)
     info.changeScoreBy(1)
 })
+let enemyStone: Sprite = null
 let muzzle: Sprite = null
 let ShipBullet: Sprite = null
-let PowerUpShootRate: Sprite = null
-let enemyStone: Sprite = null
 let stoneSpawn = 0
+let PowerUpShootRate: Sprite = null
 let splashSpriteShip: Sprite = null
+let infoText: Sprite = null
 let shootRate = 0
 let SpaceShip = sprites.create(img`
     ................
@@ -452,25 +455,30 @@ SpaceShip.setStayInScreen(true)
 shootRate = 2000
 info.setScore(0)
 info.setLife(3)
-game.onUpdateInterval(randint(200 - stoneSpawn, 3000 - stoneSpawn), function () {
-    enemyStone = sprites.create(img`
-        . . . . c c . . 
-        . c a a a a . . 
-        . a a f f b a . 
-        c a b f f c b . 
-        c b b b a f c b 
-        c b a c a b b b 
-        . b b f f a a c 
-        . . a a b b c . 
-        `, SpriteKind.Enemy)
-    enemyStone.setPosition(randint(10, 150), -10)
-    enemyStone.setVelocity(randint(-10, 10), randint(20, 40 + 0.1 * stoneSpawn))
+infoText = sprites.create(img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `, SpriteKind.info)
+infoText.setPosition(80, 130)
+forever(function () {
+	
 })
 forever(function () {
     effects.starField.startScreenEffect(2000)
-})
-forever(function () {
-	
 })
 forever(function () {
     pause(randint(10000, 12000))
@@ -490,7 +498,7 @@ forever(function () {
 })
 forever(function () {
     pause(shootRate)
-    if (shootRate > 1000) {
+    if (shootRate <= 2000 && shootRate >= 1500) {
         ShipBullet = sprites.createProjectileFromSprite(img`
             . 5 1 . 
             5 2 1 1 
@@ -532,7 +540,7 @@ forever(function () {
         pause(50)
         sprites.destroy(muzzle)
     }
-    if (shootRate <= 1500) {
+    if (shootRate <= 1499 && shootRate >= 1000) {
         ShipBullet = sprites.createProjectileFromSprite(img`
             . 3 1 . 
             3 a 1 1 
@@ -580,30 +588,30 @@ forever(function () {
         pause(50)
         sprites.destroy(muzzle)
     }
-    if (shootRate <= 1000) {
+    if (shootRate < 999) {
         ShipBullet = sprites.createProjectileFromSprite(img`
-            . 3 1 . 
-            3 a 1 1 
-            3 a a 3 
-            . 3 3 . 
+            . 2 1 . 
+            2 7 1 1 
+            2 7 7 2 
+            . 2 2 . 
             `, SpaceShip, 10, -100)
         ShipBullet = sprites.createProjectileFromSprite(img`
-            . 3 1 . 
-            3 a 1 1 
-            3 a a 3 
-            . 3 3 . 
+            . 2 1 . 
+            2 7 1 1 
+            2 7 7 2 
+            . 2 2 . 
             `, SpaceShip, -10, -100)
         ShipBullet = sprites.createProjectileFromSprite(img`
-            . 3 1 . 
-            3 a 1 1 
-            3 a a 3 
-            . 3 3 . 
+            . 2 1 . 
+            2 7 1 1 
+            2 7 7 2 
+            . 2 2 . 
             `, SpaceShip, 30, -100)
         ShipBullet = sprites.createProjectileFromSprite(img`
-            . 3 1 . 
-            3 a 1 1 
-            3 a a 3 
-            . 3 3 . 
+            . 2 1 . 
+            2 7 1 1 
+            2 7 7 2 
+            . 2 2 . 
             `, SpaceShip, -30, -100)
         muzzle = sprites.createProjectileFromSprite(img`
             ................
@@ -646,4 +654,18 @@ game.onUpdateInterval(500, function () {
 })
 game.onUpdateInterval(100, function () {
 	
+})
+game.onUpdateInterval(randint(200 - stoneSpawn, 2000 - stoneSpawn), function () {
+    enemyStone = sprites.create(img`
+        . . . . c c . . 
+        . c a a a a . . 
+        . a a f f b a . 
+        c a b f f c b . 
+        c b b b a f c b 
+        c b a c a b b b 
+        . b b f f a a c 
+        . . a a b b c . 
+        `, SpriteKind.Enemy)
+    enemyStone.setPosition(randint(10, 150), -10)
+    enemyStone.setVelocity(randint(-10, 10), randint(20, 40 + 0.1 * stoneSpawn))
 })
